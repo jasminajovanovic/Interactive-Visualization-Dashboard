@@ -24,59 +24,62 @@ function unpack(rows, index) {
 async function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
-  sample = await d3.json(`/samples/${sample}`)
+  thisSample = await d3.json(`/samples/${sample}`)
   // @TODO: Build a Bubble Chart using the sample data
   // @TODO: Build a Pie Chart
   // create an array of objects for easier sorting
   let sampleList = []
 
-  for (i=0; i<sample.sample_values.length; i++) {
+  for (i=0; i<thisSample.sample_values.length; i++) {
     sampleObject = {
-      "otu_ids": sample.otu_ids[i],
-      "otu_labels": sample.otu_labels[i],
-      "sample_values": sample.sample_values[i]
+      "otu_ids": thisSample.otu_ids[i],
+      "otu_labels": thisSample.otu_labels[i],
+      "sample_values": thisSample.sample_values[i]
     }
     sampleList.push(sampleObject)
   }
   // TODO: figure out how this list is printed sorted before the sort is called!
-  // console.log(sampleList)
   sampleList = sampleList.sort(function(a,b) {
     return b.sample_values - a.sample_values
   })
 
   plotSampleData = sampleList.slice(0, 10)
-  console.log(plotSampleData)
-  otu_ids =  unpack(plotSampleData, "otu_ids")
-  otu_labels = unpack(plotSampleData, "otu_labels")
-  sample_values =  unpack(plotSampleData, "sample_values")
-  console.log(otu_labels)
-  // console.log(sampleList)
+  // console.log(plotSampleData)
+  otu_ids =  unpack(sampleList, "otu_ids")
+  otu_labels = unpack(sampleList, "otu_labels")
+  sample_values =  unpack(sampleList, "sample_values")
+  // console.log(otu_labels)
+
   const trace1 = {
-    "values": sample_values,
-    "labels": otu_ids,
-    "type": "pie",
-    // "text": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    // "text": otu_labels
+    values: sample_values.slice(0,10),
+    labels: otu_ids.slice(0,10),
+    type: "pie",
+    hoverinfo: otu_labels.slice(0,10),
+    mode: 'markers'
+    // "text": otu_labels,
+    // hoverinfo: otu_labels
   }
   data1 = [trace1]
   Plotly.newPlot("pie", data1);
+
   const trace2 = {
     x: otu_ids,
     y: sample_values,
     mode: 'markers',
     marker: {
-      size: sample_values
-    }
-    // text: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    // hoverinfo = 'text'
-  }
+      size: sample_values,
+      color: otu_ids,
+      colorscale: "Earth"
+    },
+    // text: otu_labels,
+    hoverinfo: otu_labels
 
-  // TODO: why doesn't `${sample}` work for the graph title
+  }
   const layout2 = {
-    title: "My title",
+    title: `Sample #${sample}`,
     xaxis: {
       title: {
-        text: 'OTU ID',
+        text: 'OTU ID'
       }
     }
   }

@@ -1,37 +1,145 @@
 async function buildMetadata(sample) {
 
-  // @TODO: Complete the following function that builds the metadata panel
 
     // Use d3 to select the panel with id of `#sample-metadata`
     const thisMetadata = await d3.json(`/metadata/${sample}`)
     const metadataPanel = d3.select ("#sample-metadata")
 
-    // Use `.html("") to clear any existing metadata
     metadataPanel.html("")
 
-    // TODO: refactor to use object.entries
-    // Use `Object.entries` to add each key and value pair to the panel
     for (key in thisMetadata) {
       currentElement = metadataPanel.append(`${key}`)
       currentElement.html(`${key}: ${thisMetadata[key]}<br>`)
     }
 
-    // htmlString = ""
-
-    // for (key in thisMetadata) {
-    //   htmlString += `${key}: ${thisMetadata[key]} <br>`
-    // }
-
-
-    // metadataPanel.html(htmlString)
-
-    // Hint: Inside the loop, you will need to use d3 to append new
-    // tags for each key-value in the metadata.
-
-
-    // BONUS: Build the Gauge Chart
     // buildGauge(data.WFREQ);
     buildGauge(thisMetadata["WFREQ"])
+}
+
+
+function unpack(rows, index) {
+    return rows.map(function(row) {
+        return row[index];
+    });
+}
+
+function buildBubble (data, sample) {
+
+  otu_ids =  unpack(data, "otu_ids")
+  otu_labels = unpack(data, "otu_labels")
+  sample_values = unpack(data, "sample_values")
+
+  const trace = {
+    x: otu_ids,
+    y: sample_values,
+    mode: 'markers',
+    marker: {
+      size: sample_values,
+      color: otu_ids,
+      colorscale: "Earth"
+    },
+    text: otu_labels
+  }
+  const layout= {
+    title: `Sample #${sample}`,
+    xaxis: {
+      title: {
+        text: 'OTU ID'
+      }
+    },
+    height: 800,
+    width: 1600
+  }
+
+  data = [trace]
+  // display the bubble chart
+  Plotly.newPlot("bubble", data, layout)
+}
+
+function buildPie (data) {
+  otu_ids =  unpack(data, "otu_ids")
+  otu_labels = unpack(data, "otu_labels")
+  sample_values = unpack(data, "sample_values")
+
+  const trace = {
+    values: sample_values,
+    labels: otu_ids,
+    names: otu_labels,
+    type: "pie",
+    mode: 'markers',
+    hovertext: otu_labels,
+    hoverinfo: 'label+percent+text',
+  }
+  // display the pie chart
+  data = [trace]
+  Plotly.newPlot("pie", data);
+}
+
+async function buildCharts(sample) {
+
+  // @TODO: Use `d3.json` to fetch the sample data for the plots
+  const thisSample = await d3.json(`/samples/${sample}`)
+  // create an array of objects for easier sorting
+  let sampleList = []
+
+  for (i=0; i<thisSample.sample_values.length; i++) {
+    sampleObject = {
+      "otu_ids": thisSample.otu_ids[i],
+      "otu_labels": thisSample.otu_labels[i],
+      "sample_values": thisSample.sample_values[i]
+    }
+    sampleList.push(sampleObject)
+  }
+  sampleList = sampleList.sort(function(a,b) {
+    return b.sample_values - a.sample_values
+  })
+
+  // plotSampleData = sampleList.slice(0, 10)
+  // otu_ids =  unpack(sampleList, "otu_ids")
+  // otu_labels = unpack(sampleList, "otu_labels")
+  // sample_values = unpack(sampleList, "sample_values")
+  //
+  // const trace1 = {
+  //   values: sample_values.slice(0,10),
+  //   labels: otu_ids.slice(0,10),
+  //   names: otu_labels.slice(0,10),
+  //   type: "pie",
+  //   mode: 'markers',
+  //   hovertext: otu_labels.slice(0,10),
+  //   hoverinfo: 'label+percent+text',
+  // }
+  // // display the pie chart
+  // data1 = [trace1]
+  // Plotly.newPlot("pie", data1);
+
+  buildPie(sampleList.slice(0,10))
+  buildBubble(sampleList, sample)
+  // create bubble chart
+  // const trace2 = {
+  //   x: otu_ids,
+  //   y: sample_values,
+  //   mode: 'markers',
+  //   marker: {
+  //     size: sample_values,
+  //     color: otu_ids,
+  //     colorscale: "Earth"
+  //   },
+  //   text: otu_labels
+  // }
+  // const layout2 = {
+  //   title: `Sample #${sample}`,
+  //   xaxis: {
+  //     title: {
+  //       text: 'OTU ID'
+  //     }
+  //   },
+  //   height: 800,
+  //   width: 1600
+  // }
+  //
+  // data2 = [trace2]
+  // // display the bubble chart
+  // Plotly.newPlot("bubble", data2, layout2)
 }
 
 function buildGauge(level){
@@ -104,76 +212,6 @@ function buildGauge(level){
   Plotly.newPlot('gauge', data, layout);
 }
 
-function unpack(rows, index) {
-    return rows.map(function(row) {
-        return row[index];
-    });
-}
-
-async function buildCharts(sample) {
-
-  // @TODO: Use `d3.json` to fetch the sample data for the plots
-  const thisSample = await d3.json(`/samples/${sample}`)
-  // create an array of objects for easier sorting
-  let sampleList = []
-
-  for (i=0; i<thisSample.sample_values.length; i++) {
-    sampleObject = {
-      "otu_ids": thisSample.otu_ids[i],
-      "otu_labels": thisSample.otu_labels[i],
-      "sample_values": thisSample.sample_values[i]
-    }
-    sampleList.push(sampleObject)
-  }
-  sampleList = sampleList.sort(function(a,b) {
-    return b.sample_values - a.sample_values
-  })
-
-  plotSampleData = sampleList.slice(0, 10)
-  otu_ids =  unpack(sampleList, "otu_ids")
-  otu_labels = unpack(sampleList, "otu_labels")
-  sample_values = unpack(sampleList, "sample_values")
-
-  const trace1 = {
-    values: sample_values.slice(0,10),
-    labels: otu_ids.slice(0,10),
-    names: otu_labels.slice(0,10),
-    type: "pie",
-    mode: 'markers',
-    hovertext: otu_labels.slice(0,10),
-    hoverinfo: 'label+percent+text',
-  }
-  // display the pie chart
-  data1 = [trace1]
-  Plotly.newPlot("pie", data1);
-
-  // create bubble chart
-  const trace2 = {
-    x: otu_ids,
-    y: sample_values,
-    mode: 'markers',
-    marker: {
-      size: sample_values,
-      color: otu_ids,
-      colorscale: "Earth"
-    },
-    text: otu_labels
-  }
-  const layout2 = {
-    title: `Sample #${sample}`,
-    xaxis: {
-      title: {
-        text: 'OTU ID'
-      }
-    },
-    height: 800,
-    width: 1600
-  }
-
-  data2 = [trace2]
-  // display the bubble chart
-  Plotly.newPlot("bubble", data2, layout2)
-}
 
 
 function init() {
@@ -195,6 +233,7 @@ function init() {
     buildMetadata(firstSample);
   });
 }
+
 
 function optionChanged(newSample) {
   // Fetch new data each time a new sample is selected

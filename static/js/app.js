@@ -44,8 +44,8 @@ function buildBubble (data, sample) {
         text: 'OTU ID'
       }
     },
-    height: 800,
-    width: 1600
+    // height: 800,
+    // width: 1600
   }
 
   data = [trace]
@@ -155,8 +155,8 @@ function buildGauge(level){
         }
       }],
     title: '<b>Gauge</b> <br> Washing Frequency',
-    height: 600,
-    width: 600,
+    // height: 600,
+    // width: 600,
     xaxis: {zeroline:false, showticklabels:false,
                showgrid: false, range: [-1, 1]},
     yaxis: {zeroline:false, showticklabels:false,

@@ -1,21 +1,18 @@
 async function buildMetadata(sample) {
-
-
     // Use d3 to select the panel with id of `#sample-metadata`
     const thisMetadata = await d3.json(`/metadata/${sample}`)
     const metadataPanel = d3.select ("#sample-metadata")
 
+    // clear metadata panel
     metadataPanel.html("")
 
     for (key in thisMetadata) {
       currentElement = metadataPanel.append(`${key}`)
       currentElement.html(`${key}: ${thisMetadata[key]}<br>`)
     }
-
-    // buildGauge(data.WFREQ);
-    buildGauge(thisMetadata["WFREQ"])
+    const washFrequency = thisMetadata["WFREQ"]
+    buildGauge(washFrequency)
 }
-
 
 function unpack(rows, index) {
     return rows.map(function(row) {
@@ -77,8 +74,8 @@ function buildPie (data) {
 
 async function buildCharts(sample) {
 
-  // @TODO: Use `d3.json` to fetch the sample data for the plots
   const thisSample = await d3.json(`/samples/${sample}`)
+
   // create an array of objects for easier sorting
   let sampleList = []
 
@@ -90,61 +87,18 @@ async function buildCharts(sample) {
     }
     sampleList.push(sampleObject)
   }
+
+  // sort the array on sample_values, in descending order
   sampleList = sampleList.sort(function(a,b) {
     return b.sample_values - a.sample_values
   })
 
-  // plotSampleData = sampleList.slice(0, 10)
-  // otu_ids =  unpack(sampleList, "otu_ids")
-  // otu_labels = unpack(sampleList, "otu_labels")
-  // sample_values = unpack(sampleList, "sample_values")
-  //
-  // const trace1 = {
-  //   values: sample_values.slice(0,10),
-  //   labels: otu_ids.slice(0,10),
-  //   names: otu_labels.slice(0,10),
-  //   type: "pie",
-  //   mode: 'markers',
-  //   hovertext: otu_labels.slice(0,10),
-  //   hoverinfo: 'label+percent+text',
-  // }
-  // // display the pie chart
-  // data1 = [trace1]
-  // Plotly.newPlot("pie", data1);
-
   buildPie(sampleList.slice(0,10))
   buildBubble(sampleList, sample)
-  // create bubble chart
-  // const trace2 = {
-  //   x: otu_ids,
-  //   y: sample_values,
-  //   mode: 'markers',
-  //   marker: {
-  //     size: sample_values,
-  //     color: otu_ids,
-  //     colorscale: "Earth"
-  //   },
-  //   text: otu_labels
-  // }
-  // const layout2 = {
-  //   title: `Sample #${sample}`,
-  //   xaxis: {
-  //     title: {
-  //       text: 'OTU ID'
-  //     }
-  //   },
-  //   height: 800,
-  //   width: 1600
-  // }
-  //
-  // data2 = [trace2]
-  // // display the bubble chart
-  // Plotly.newPlot("bubble", data2, layout2)
 }
 
 function buildGauge(level){
   const gauge = d3.select ("#gauge")
-  // Enter a speed between 0 and 180
   var newLevel = level*180/8-10;
 
   // Trig to calc meter point

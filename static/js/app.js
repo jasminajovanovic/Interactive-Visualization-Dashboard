@@ -99,7 +99,7 @@ async function buildCharts(sample) {
 
 function buildGauge(level){
   const gauge = d3.select ("#gauge")
-  var newLevel = level*180/8-10;
+  var newLevel = level*180/9;
 
   // Trig to calc meter point
   var degrees = 115, radius = .6;
@@ -107,7 +107,7 @@ function buildGauge(level){
   var x = -1 * radius * Math.cos(radians);
   var y = radius * Math.sin(radians);
 
-  var degrees = 180 - newLevel,
+  var degrees = 180 - newLevel + 10,
        radius = .5;
   var radians = degrees * Math.PI / 180;
   var x = radius * Math.cos(radians);
@@ -125,9 +125,9 @@ function buildGauge(level){
      x: [0], y:[0],
       marker: {size: 28, color:'850000'},
       showlegend: false,
-      name: 'speed',
+      name: 'frequency',
       text: level,
-      hoverinfo: 'text+name'},
+      hoverinfo: 'name'},
     { values: [ 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50/9, 50],
     rotation: 90,
     text: ['9', '8', '7', '6', '5', '4',

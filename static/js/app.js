@@ -107,7 +107,7 @@ function buildGauge(level){
   var x = -1 * radius * Math.cos(radians);
   var y = radius * Math.sin(radians);
 
-  var degrees = 180 - newLevel+5,
+  var degrees = 180 - newLevel+7,
        radius = .5;
   var radians = degrees * Math.PI / 180;
   var x = radius * Math.cos(radians);

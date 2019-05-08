@@ -44,8 +44,11 @@ function buildBubble (data, sample) {
         text: 'OTU ID'
       }
     },
-    // height: 800,
-    // width: 1600
+    yaxis: {
+      title: {
+        text: 'Amount of Bacteria'
+      }
+    }
   }
 
   data = [trace]

@@ -155,7 +155,7 @@ function buildGauge(level){
           color: '850000'
         }
       }],
-    title: '<b>Gauge</b> <br> Washing Frequency',
+    title: '<b>Belly Button Washing Frequency</b> <br> Scrubs per Week',
     // height: 600,
     // width: 600,
     xaxis: {zeroline:false, showticklabels:false,
